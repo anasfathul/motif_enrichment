@@ -57,7 +57,7 @@ pr_score <- pr.curve(scores.class0 = pred_probs, weights.class0 = motif_indicato
 
 # save the list
 roc_pr <- list(roc_auc = roc_score$auc, pr_auc_integral = pr_score$auc.integral,
- pr_auc_davis = pr_scpre$auc.davis.goadrich, motif_count = motif_count_sum, motif_id = prefix_name)
+ pr_auc_davis = pr_score$auc.davis.goadrich, motif_count = motif_count_sum, motif_id = prefix_name)
 
 roc_pr_df <- as.data.frame(roc_pr)
 
