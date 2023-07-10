@@ -3,17 +3,17 @@ library(readr)
 library(tidyverse)
 library(reticulate)
 library(stats)
-library(ggplot2)
+library(PRROC)
 library(pROC)
 
 np <- import("numpy")
 
 # Input parameteres:
 # 1.) DHS_nmf file
-# 2.) Metadata file
-# 3.) Motif indicator file
-# 4.) Output prefix - prefix of output filenames (Use motif_id)
-# 5.) Optional PRROC/PRAUC graph
+# 2.) Motif indicator file
+# 3.) Output prefix - prefix of output filenames (Use motif_id)
+# 4.) Optional PRROC/PRAUC graph
+# 5.) Metadata file
 # Rscript motif_enrichment.R arg1 arg2 arg3 output.csv
 
 args = commandArgs(trailingOnly=TRUE)
@@ -28,14 +28,16 @@ DHS_feature_nmf <- np$load(args[1])
 DHS_feature_nmf_df <- data.frame(t(DHS_feature_nmf))
 
 print("Reading Metadata File")
-metadata <- read_delim(args[2], delim='\t', col_names=T)
+# metadata <- read_delim(args[2], delim='\t', col_names=T)
+url <- "https://resources.altius.org/~jvierstra/projects/motif-clustering-v2.1beta/metadata.tsv"
+motifs_metadata <- read.delim(url, sep = "\t")
 
 print("Reading Motif Indicator")
-motif_indicator <- read.table(args[3])
+motif_indicator <- read.table(args[2])
 motif_count_sum <- sum(motif_indicator)
 motif_indicator <- unlist(motif_indicator)
 
-prefix_name <- args[4]
+prefix_name <- args[3]
 
 print("Running logistic regression model")
 log_model = glm(motif_indicator ~., data=DHS_feature_nmf_df, family=binomial(link="logit"))
@@ -61,10 +63,10 @@ roc_pr_df <- as.data.frame(roc_pr)
 
 # Save in .csv format
 print("Writing roc_pr csv file")
-csv_name1 <- paste(prefix_name, ".prroc", sep='')
+csv_name1 <- paste(prefix_name, ".prroc.tsv", sep='')
 write.csv(roc_pr_df, file=csv_name1)
 
 # Save in .csv format X1, X2, ..., X16, PRROC score, PRAUC score
-csv_name2 <- paste(prefix_name, ".coeff", sep='')
+csv_name2 <- paste(prefix_name, ".coeff.tsv", sep='')
 print("Writing coefficient csv file")
 write.csv(coef_df, file=csv_name2)
