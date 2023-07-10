@@ -12,8 +12,9 @@ np <- import("numpy")
 # 1.) DHS_nmf file
 # 2.) Metadata file
 # 3.) Motif indicator file
-# 4.) Output "file_name.csv" *include .csv
+# 4.) Output prefix - prefix of output filenames (Use motif_id)
 # 5.) Optional PRROC/PRAUC graph
+# Rscript motif_enrichment.R arg1 arg2 arg3 output.csv
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -31,11 +32,39 @@ metadata <- read_delim(args[2], delim='\t', col_names=T)
 
 print("Reading Motif Indicator")
 motif_indicator <- read.table(args[3])
+motif_count_sum <- sum(motif_indicator)
 motif_indicator <- unlist(motif_indicator)
 
-print("Running logistic regression model")
-model = glm(motif_indicator ~., data=DHS_feature_nmf_df, family=binomial(link="logit"))
+prefix_name <- args[4]
 
+print("Running logistic regression model")
+log_model = glm(motif_indicator ~., data=DHS_feature_nmf_df, family=binomial(link="logit"))
+
+# Set up dataframe for coefficents and rename column
+coef_df <- as.data.frame(summary(log_model)['coefficients'])
+coef_df['motif_id'] <- prefix_name
+names(coef_df)[1] <- "estimate"
+names(coef_df)[2] <- "std_error"
+names(coef_df)[3] <- "z_value"
+names(coef_df)[4] <- "Pr(>|z|)"
+
+# Calculate AUC & PR
+pred_probs = predict(log_model, type = "response")
+roc_score <- roc.curve(scores.class0 = pred_probs, weights.class0 = motif_indicator, curve = TRUE)
+pr_score <- pr.curve(scores.class0 = pred_probs, weights.class0 = motif_indicator, curve = TRUE)
+
+# save the list
+roc_pr <- list(roc_auc = roc_score$auc, pr_auc_integral = pr_score$auc.integral,
+ pr_auc_davis = pr_scpre$auc.davis.goadrich, motif_count = motif_count_sum, motif_id = prefix_name)
+
+roc_pr_df <- as.data.frame(roc_pr)
+
+# Save in .csv format
+print("Writing roc_pr csv file")
+csv_name1 <- paste(prefix_name, ".prroc", sep='')
+write.csv(roc_pr_df, file=csv_name1)
 
 # Save in .csv format X1, X2, ..., X16, PRROC score, PRAUC score
-write.csv(summary(model)['coefficients'],file=args[4])
+csv_name2 <- paste(prefix_name, ".coeff", sep='')
+print("Writing coefficient csv file")
+write.csv(coef_df, file=csv_name2)
