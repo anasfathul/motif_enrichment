@@ -4,7 +4,7 @@ library(tidyverse)
 library(reticulate)
 library(stats)
 library(PRROC)
-library(pROC)
+
 
 np <- import("numpy")
 
@@ -63,7 +63,7 @@ roc_pr_df <- as.data.frame(roc_pr)
 
 # Save in .csv format
 print("Writing roc_pr csv file")
-csv_name1 <- paste(prefix_name, ".prroc.tsv", sep='')
+csv_name1 <- paste(prefix_name, ".metrics.tsv", sep='')
 write.csv(roc_pr_df, file=csv_name1)
 
 # Save in .csv format X1, X2, ..., X16, PRROC score, PRAUC score
