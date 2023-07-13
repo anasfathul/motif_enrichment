@@ -64,9 +64,9 @@ roc_pr_df <- as.data.frame(roc_pr)
 # Save in .csv format
 print("Writing roc_pr csv file")
 csv_name1 <- paste(prefix_name, ".metrics.tsv", sep='')
-write.csv(roc_pr_df, file=csv_name1)
+write.table(roc_pr_df, file=csv_name1, quote=FALSE, sep='\t', col.names = NA)
 
 # Save in .csv format X1, X2, ..., X16, PRROC score, PRAUC score
 csv_name2 <- paste(prefix_name, ".coeff.tsv", sep='')
 print("Writing coefficient csv file")
-write.csv(coef_df, file=csv_name2)
+write.table(coef_df, file=csv_name2, quote=FALSE, sep='\t', col.names = NA)
