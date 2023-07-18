@@ -66,6 +66,7 @@ def generate_top(modal, cluster, component, **kwargs):
     # vis.plot(x="tf_name", y="Estimation", kind="bar")
     plt.barh(data=vis, y=cluster, width='Estimation', color = colors_order[component - 1] ,  **kwargs)
     plt.title(X_components)
+    # plt.savefig('plot.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 # combine coeffs with some columns with motifs_metadata
