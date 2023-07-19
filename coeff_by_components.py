@@ -79,6 +79,6 @@ if __name__ == '__main__':
     parser.add_argument('coeffs', help='Path to all_coeffs file')
     parser.add_argument('metamotifs', help='Path to motifs_meta file with cluster_name')
     args = parser.parse_args()
-    est_components_sort = merge_aggregate_fdr(args.coeffs, args.metamotifs)
+    est_components_sort = merge_aggregate_fdr(pd.read_csv(args.coeffs), pd.read_table(args.metamotifs))
     for i in range(1,17):
         generate_top(est_components_sort, "tf_name", i)
