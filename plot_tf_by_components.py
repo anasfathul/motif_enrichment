@@ -43,7 +43,7 @@ def generate_top(modal, cluster, component, **kwargs):
     colors_order = get_colors_order(component)
     plt.barh(data=vis, y=cluster, width='Estimation', color = colors_order[component - 1] ,  **kwargs)
     plt.title(X_components)
-    file_name = X_components + '.png'
+    file_name = '16components.' + X_components + '.png'
     plt.savefig(file_name, bbox_inches='tight')
     plt.show()
 
